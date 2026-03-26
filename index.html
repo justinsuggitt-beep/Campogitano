@@ -1,0 +1,602 @@
+<!DOCTYPE html>
+<html lang="en">
+
+  <head>
+    <meta charset="UTF-8">
+    <title>Untitled</title>
+    
+
+  </head>
+    
+  <body>
+  <!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Hostel Bed Board</title>
+  <style>
+    :root {
+      --bg: #f8fafc;
+      --card: #ffffff;
+      --text: #0f172a;
+      --muted: #64748b;
+      --border: #e2e8f0;
+      --green-bg: #dcfce7;
+      --green-text: #166534;
+      --red-bg: #fee2e2;
+      --red-text: #991b1b;
+      --yellow-bg: #fef3c7;
+      --yellow-text: #92400e;
+      --blue-bg: #dbeafe;
+      --blue-text: #1d4ed8;
+      --accent: #0f172a;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+    }
+    .container {
+      max-width: 1280px;
+      margin: 0 auto;
+      padding: 16px;
+    }
+    .topbar {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      align-items: end;
+      justify-content: space-between;
+      margin-bottom: 20px;
+    }
+    h1 { margin: 0 0 6px; font-size: 32px; }
+    .subtitle { color: var(--muted); font-size: 14px; }
+    .controls {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      align-items: center;
+    }
+    input, select, button {
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 10px 12px;
+      font-size: 14px;
+      background: white;
+    }
+    button {
+      cursor: pointer;
+      font-weight: 600;
+    }
+    .btn-dark {
+      background: var(--accent);
+      color: white;
+      border-color: var(--accent);
+    }
+    .statusbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: white;
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 12px 14px;
+      margin-bottom: 16px;
+    }
+    .pill {
+      border-radius: 999px;
+      padding: 6px 10px;
+      font-size: 12px;
+      font-weight: 700;
+      background: #e2e8f0;
+    }
+    .grid {
+      display: grid;
+      gap: 14px;
+    }
+    .stats { grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); margin-bottom: 16px; }
+    .rooms { grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); }
+    .card {
+      background: var(--card);
+      border-radius: 20px;
+      border: 1px solid transparent;
+      box-shadow: 0 2px 10px rgba(15, 23, 42, 0.05);
+      padding: 16px;
+    }
+    .room-card { cursor: pointer; }
+    .row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 10px;
+    }
+    .muted { color: var(--muted); }
+    .small { font-size: 12px; }
+    .bed-list { display: grid; gap: 8px; margin-top: 12px; }
+    .bed-item {
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 12px;
+    }
+    .free { background: var(--green-bg); color: var(--green-text); border-color: #bbf7d0; }
+    .occupied { background: var(--red-bg); color: var(--red-text); border-color: #fecaca; }
+    .cleaning { background: var(--yellow-bg); color: var(--yellow-text); border-color: #fde68a; }
+    .reserved { background: var(--blue-bg); color: var(--blue-text); border-color: #bfdbfe; }
+    .smart-box { margin-bottom: 16px; }
+    .smart-grid { display: grid; gap: 10px; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); }
+    .suggestion {
+      margin-top: 12px;
+      border: 1px solid var(--border);
+      background: #f8fafc;
+      border-radius: 16px;
+      padding: 14px;
+    }
+    .modal {
+      position: fixed;
+      inset: 0;
+      background: rgba(15,23,42,0.45);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 16px;
+    }
+    .modal.show { display: flex; }
+    .modal-content {
+      width: min(1100px, 100%);
+      max-height: 90vh;
+      overflow: auto;
+      background: white;
+      border-radius: 24px;
+      padding: 18px;
+    }
+    .modal-grid { display: grid; gap: 14px; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); }
+    label { display: block; font-size: 13px; margin-bottom: 6px; font-weight: 600; }
+    .section-space { margin-top: 16px; }
+    @media (max-width: 700px) {
+      h1 { font-size: 26px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="topbar">
+      <div>
+        <h1 id="title">Beds & Rooms</h1>
+        <div class="subtitle" id="subtitle">Clean tablet view for staff. Tap a room to see beds, dates, and availability.</div>
+      </div>
+      <div class="controls">
+        <input id="search" placeholder="Search room, bed, guest..." />
+        <input id="selectedDate" type="date" />
+        <select id="typeFilter">
+          <option value="all">All rooms</option>
+          <option value="Privada">Private</option>
+          <option value="Semi Privada">Semi Private</option>
+          <option value="Dormitorio">Dorms</option>
+        </select>
+        <button id="freeOnlyBtn">Free Today Only</button>
+        <button id="langBtn">ES</button>
+        <button id="refreshBtn">Refresh</button>
+      </div>
+    </div>
+
+    <div class="statusbar">
+      <div id="connectionText">Demo mode</div>
+      <div class="pill" id="connectionPill">Local fallback</div>
+    </div>
+
+    <div class="card smart-box">
+      <div class="row">
+        <strong id="smartTitle">Smart Dorm Assignment</strong>
+      </div>
+      <div class="small muted section-space" id="smartText">This suggests the best dorm bed automatically. It fills Dorm 1 to 6 first, then Dorm 7 to 14, so you save on AC and keep rooms grouped better.</div>
+      <div class="smart-grid section-space">
+        <div>
+          <label id="guestLabel">Guest name</label>
+          <input id="assignGuest" placeholder="Guest name" />
+        </div>
+        <div>
+          <label>Check-in</label>
+          <input id="assignCheckIn" type="date" />
+        </div>
+        <div>
+          <label>Check-out</label>
+          <input id="assignCheckOut" type="date" />
+        </div>
+        <div style="display:flex;align-items:end;">
+          <button id="findBedBtn" class="btn-dark" style="width:100%;">Find best bed</button>
+        </div>
+      </div>
+      <div id="suggestionBox"></div>
+    </div>
+
+    <div class="grid stats" id="statsGrid"></div>
+    <div class="grid rooms" id="roomsGrid"></div>
+  </div>
+
+  <div class="modal" id="roomModal">
+    <div class="modal-content">
+      <div class="row" style="margin-bottom:14px;">
+        <h2 id="modalTitle" style="margin:0;"></h2>
+        <button id="closeModalBtn">Close</button>
+      </div>
+      <div class="modal-grid" id="modalGrid"></div>
+    </div>
+  </div>
+
+  <script>
+    const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxtxYLlEndjdJvLWleY_Za8DWkOLJgmsGACN6-Od3vB9O6uM2xTQreDB2wOc9FUIfRt/exec";
+
+    const fallbackRooms = [
+      { id: 1, name: "Full Private 1", type: "Privada", priority: 1, beds: [{ id: "FP1-1", label: "Queen", bunk: "Queen", status: "available", guest: "", checkIn: "", checkOut: "" }] },
+      { id: 2, name: "Full Private 2", type: "Privada", priority: 2, beds: [{ id: "FP2-1", label: "Queen", bunk: "Queen", status: "available", guest: "", checkIn: "", checkOut: "" }] },
+      { id: 3, name: "Semi Private", type: "Semi Privada", priority: 3, beds: [{ id: "SP-1", label: "Queen", bunk: "Queen", status: "available", guest: "", checkIn: "", checkOut: "" }] },
+      { id: 4, name: "Dorm 1 to 6", type: "Dormitorio", priority: 4, beds: [
+        { id: "D6-1", label: "Bed 1", bunk: "Bottom bunk", status: "available", guest: "", checkIn: "", checkOut: "" },
+        { id: "D6-2", label: "Bed 2", bunk: "Top bunk", status: "available", guest: "", checkIn: "", checkOut: "" },
+        { id: "D6-3", label: "Bed 3", bunk: "Bottom bunk", status: "available", guest: "", checkIn: "", checkOut: "" },
+        { id: "D6-4", label: "Bed 4", bunk: "Top bunk", status: "available", guest: "", checkIn: "", checkOut: "" },
+        { id: "D6-5", label: "Bed 5", bunk: "Bottom bunk", status: "available", guest: "", checkIn: "", checkOut: "" },
+        { id: "D6-6", label: "Bed 6", bunk: "Top bunk", status: "available", guest: "", checkIn: "", checkOut: "" },
+      ]},
+      { id: 5, name: "Dorm 7 to 14", type: "Dormitorio", priority: 5, beds: [
+        { id: "D8-7", label: "Bed 7", bunk: "Bottom bunk", status: "available", guest: "", checkIn: "", checkOut: "" },
+        { id: "D8-8", label: "Bed 8", bunk: "Top bunk", status: "available", guest: "", checkIn: "", checkOut: "" },
+        { id: "D8-9", label: "Bed 9", bunk: "Bottom bunk", status: "available", guest: "", checkIn: "", checkOut: "" },
+        { id: "D8-10", label: "Bed 10", bunk: "Top bunk", status: "available", guest: "", checkIn: "", checkOut: "" },
+        { id: "D8-11", label: "Bed 11", bunk: "Bottom bunk", status: "available", guest: "", checkIn: "", checkOut: "" },
+        { id: "D8-12", label: "Bed 12", bunk: "Top bunk", status: "available", guest: "", checkIn: "", checkOut: "" },
+        { id: "D8-13", label: "Bed 13", bunk: "Bottom bunk", status: "available", guest: "", checkIn: "", checkOut: "" },
+        { id: "D8-14", label: "Bed 14", bunk: "Top bunk", status: "available", guest: "", checkIn: "", checkOut: "" },
+      ]},
+    ];
+
+    const labels = {
+      en: {
+        title: "Beds & Rooms", subtitle: "Clean tablet view for staff. Tap a room to see beds, dates, and availability.", search: "Search room, bed, guest...",
+        allRooms: "All rooms", private: "Private", semiPrivate: "Semi Private", dorms: "Dorms", freeOnly: "Free Today Only", showingFree: "Showing Free Today",
+        rooms: "Rooms", beds: "Beds", freeThatDay: "Free that day", occupied: "Occupied", reservedCleaning: "Reserved / Cleaning",
+        smartTitle: "Smart Dorm Assignment", smartText: "This suggests the best dorm bed automatically. It fills Dorm 1 to 6 first, then Dorm 7 to 14, so you save on AC and keep rooms grouped better.",
+        guestName: "Guest name", findBestBed: "Find best bed", assignThisBed: "Assign this bed", close: "Close", refresh: "Refresh",
+        connected: "Connected to Google Sheets", demo: "Demo mode", local: "Local fallback", gsheets: "Google Sheets", free: "Free", reserved: "Reserved", cleaning: "Cleaning",
+        stayDates: "Stay dates", noCheckIn: "No check-in", noCheckOut: "No check-out", status: "Status", checkIn: "Check in", checkOut: "Check out",
+        suggestedPlacement: "Suggested placement", currentRoomFill: "Current room fill", noSuggestion: "No bed available for those dates."
+      },
+      es: {
+        title: "Camas y Habitaciones", subtitle: "Vista limpia para tablet. Toca una habitación para ver camas, fechas y disponibilidad.", search: "Buscar habitación, cama o huésped...",
+        allRooms: "Todas", private: "Privadas", semiPrivate: "Semi Privada", dorms: "Dormitorios", freeOnly: "Solo libres hoy", showingFree: "Mostrando libres hoy",
+        rooms: "Habitaciones", beds: "Camas", freeThatDay: "Libres ese día", occupied: "Ocupadas", reservedCleaning: "Reservadas / Limpieza",
+        smartTitle: "Asignación Inteligente", smartText: "Esto sugiere automáticamente la mejor cama en dormitorio. Llena primero Dorm 1 a 6 y luego Dorm 7 a 14 para ahorrar aire acondicionado y agrupar mejor a los huéspedes.",
+        guestName: "Nombre del huésped", findBestBed: "Buscar mejor cama", assignThisBed: "Asignar esta cama", close: "Cerrar", refresh: "Actualizar",
+        connected: "Conectado a Google Sheets", demo: "Modo demo", local: "Local", gsheets: "Google Sheets", free: "Libre", reserved: "Reservada", cleaning: "Limpieza",
+        stayDates: "Fechas", noCheckIn: "Sin check-in", noCheckOut: "Sin check-out", status: "Estado", checkIn: "Check-in", checkOut: "Check-out",
+        suggestedPlacement: "Ubicación sugerida", currentRoomFill: "Ocupación actual del cuarto", noSuggestion: "No hay cama disponible para esas fechas."
+      }
+    };
+
+    const statusLabel = {
+      en: { available: "Free", occupied: "Occupied", cleaning: "Cleaning", reserved: "Reserved" },
+      es: { available: "Libre", occupied: "Ocupada", cleaning: "Limpieza", reserved: "Reservada" }
+    };
+
+    let state = {
+      lang: "en",
+      rooms: fallbackRooms,
+      selectedDate: new Date().toISOString().slice(0, 10),
+      search: "",
+      typeFilter: "all",
+      showFreeOnly: false,
+      connected: false,
+      selectedRoomId: null,
+      smartSuggestion: null,
+    };
+
+    const el = (id) => document.getElementById(id);
+
+    function isDateInsideStay(date, checkIn, checkOut) {
+      if (!date || !checkIn || !checkOut) return false;
+      return date >= checkIn && date < checkOut;
+    }
+
+    function datesOverlap(startA, endA, startB, endB) {
+      if (!startA || !endA || !startB || !endB) return false;
+      return startA < endB && endA > startB;
+    }
+
+    function getDateStatus(bed, selectedDate) {
+      const occupied = isDateInsideStay(selectedDate, bed.checkIn, bed.checkOut);
+      if (bed.status === "cleaning") return "cleaning";
+      if (bed.status === "reserved" && occupied) return "reserved";
+      if (bed.status === "occupied" && occupied) return "occupied";
+      return "available";
+    }
+
+    async function apiRequest(payload) {
+      const res = await fetch(APPS_SCRIPT_URL, {
+        method: "POST",
+        headers: { "Content-Type": "text/plain;charset=utf-8" },
+        body: JSON.stringify(payload),
+      });
+      return res.json();
+    }
+
+    async function loadFromSheet() {
+      try {
+        const data = await apiRequest({ action: "listBeds" });
+        if (data && data.rooms && data.rooms.length) {
+          state.rooms = data.rooms;
+          state.connected = true;
+        } else {
+          state.connected = false;
+        }
+      } catch (e) {
+        state.connected = false;
+      }
+      render();
+    }
+
+    async function saveToSheet(payload) {
+      try {
+        await apiRequest(payload);
+        state.connected = true;
+      } catch (e) {
+        state.connected = false;
+      }
+      render();
+    }
+
+    function updateLocalBed(roomId, bedId, updates) {
+      state.rooms = state.rooms.map(room => room.id !== roomId ? room : ({
+        ...room,
+        beds: room.beds.map(bed => bed.id !== bedId ? bed : ({ ...bed, ...updates }))
+      }));
+    }
+
+    function getSummary() {
+      const beds = state.rooms.flatMap(room => room.beds.map(bed => ({ ...bed, dateStatus: getDateStatus(bed, state.selectedDate) })));
+      return {
+        totalRooms: state.rooms.length,
+        totalBeds: beds.length,
+        available: beds.filter(b => b.dateStatus === "available").length,
+        occupied: beds.filter(b => b.dateStatus === "occupied").length,
+        reservedCleaning: beds.filter(b => b.dateStatus === "reserved" || b.dateStatus === "cleaning").length,
+      };
+    }
+
+    function filteredRooms() {
+      const t = statusLabel[state.lang];
+      return state.rooms.filter(room => {
+        const typeOk = state.typeFilter === "all" || room.type === state.typeFilter;
+        const q = state.search.toLowerCase();
+        const beds = room.beds.map(bed => ({ ...bed, dateStatus: getDateStatus(bed, state.selectedDate) }));
+        const searchOk = !q || room.name.toLowerCase().includes(q) || beds.some(b =>
+          (b.label || "").toLowerCase().includes(q) ||
+          (b.bunk || "").toLowerCase().includes(q) ||
+          (b.guest || "").toLowerCase().includes(q) ||
+          (t[b.dateStatus] || "").toLowerCase().includes(q)
+        );
+        const freeOk = !state.showFreeOnly || beds.some(b => b.dateStatus === "available");
+        return typeOk && searchOk && freeOk;
+      });
+    }
+
+    function runSmartAssign() {
+      const guest = el("assignGuest").value.trim();
+      const checkIn = el("assignCheckIn").value;
+      const checkOut = el("assignCheckOut").value;
+      if (!guest || !checkIn || !checkOut) return;
+      const dormRooms = [...state.rooms].filter(r => r.type === "Dormitorio").sort((a,b) => (a.priority || 999) - (b.priority || 999));
+      let suggestion = null;
+      for (const room of dormRooms) {
+        const occupiedBeds = room.beds.filter(bed => datesOverlap(checkIn, checkOut, bed.checkIn, bed.checkOut) || bed.status === "cleaning").length;
+        const openBeds = room.beds.filter(bed => !datesOverlap(checkIn, checkOut, bed.checkIn, bed.checkOut) && bed.status !== "cleaning");
+        if (openBeds.length) {
+          const bed = openBeds[0];
+          suggestion = { roomId: room.id, roomName: room.name, bedId: bed.id, bedLabel: bed.label, bunk: bed.bunk, occupiedBeds, totalBeds: room.beds.length, guest, checkIn, checkOut };
+          break;
+        }
+      }
+      state.smartSuggestion = suggestion;
+      render();
+    }
+
+    function assignSuggestedBed() {
+      const s = state.smartSuggestion;
+      if (!s) return;
+      updateLocalBed(s.roomId, s.bedId, { guest: s.guest, checkIn: s.checkIn, checkOut: s.checkOut, status: "reserved" });
+      saveToSheet({ action: "reserveBed", roomId: s.roomId, bedId: s.bedId, guest: s.guest, checkIn: s.checkIn, checkOut: s.checkOut });
+      el("assignGuest").value = "";
+      state.smartSuggestion = null;
+      render();
+    }
+
+    function openRoom(roomId) {
+      state.selectedRoomId = roomId;
+      renderModal();
+      el("roomModal").classList.add("show");
+    }
+
+    function closeRoom() {
+      el("roomModal").classList.remove("show");
+    }
+
+    function checkIn(roomId, bedId) {
+      const t = labels[state.lang];
+      const guest = prompt(`${t.guestName}:`);
+      if (!guest) return;
+      const checkInDate = prompt("YYYY-MM-DD", state.selectedDate);
+      if (!checkInDate) return;
+      const checkOutDate = prompt("YYYY-MM-DD", state.selectedDate);
+      if (!checkOutDate) return;
+      updateLocalBed(roomId, bedId, { guest, checkIn: checkInDate, checkOut: checkOutDate, status: "occupied" });
+      saveToSheet({ action: "checkIn", roomId, bedId, guest, checkIn: checkInDate, checkOut: checkOutDate });
+      render();
+      renderModal();
+    }
+
+    function checkOut(roomId, bedId) {
+      updateLocalBed(roomId, bedId, { guest: "", checkIn: "", checkOut: "", status: "cleaning" });
+      saveToSheet({ action: "checkOut", roomId, bedId });
+      render();
+      renderModal();
+    }
+
+    function changeBedField(roomId, bedId, field, value) {
+      updateLocalBed(roomId, bedId, { [field]: value });
+      saveToSheet({ action: "updateBed", roomId, bedId, updates: { [field]: value } });
+      render();
+      renderModal();
+    }
+
+    function render() {
+      const t = labels[state.lang];
+      el("title").textContent = t.title;
+      el("subtitle").textContent = t.subtitle;
+      el("search").placeholder = t.search;
+      el("freeOnlyBtn").textContent = state.showFreeOnly ? t.showingFree : t.freeOnly;
+      el("langBtn").textContent = state.lang === "en" ? "ES" : "EN";
+      el("refreshBtn").textContent = t.refresh;
+      el("connectionText").textContent = state.connected ? t.connected : t.demo;
+      el("connectionPill").textContent = state.connected ? t.gsheets : t.local;
+      el("smartTitle").textContent = t.smartTitle;
+      el("smartText").textContent = t.smartText;
+      el("guestLabel").textContent = t.guestName;
+      el("assignGuest").placeholder = t.guestName;
+      el("findBedBtn").textContent = t.findBestBed;
+      el("closeModalBtn").textContent = t.close;
+
+      const summary = getSummary();
+      el("statsGrid").innerHTML = [
+        { label: t.rooms, value: summary.totalRooms },
+        { label: t.beds, value: summary.totalBeds },
+        { label: t.freeThatDay, value: summary.available },
+        { label: t.occupied, value: summary.occupied },
+        { label: t.reservedCleaning, value: summary.reservedCleaning },
+      ].map(stat => `
+        <div class="card">
+          <div class="small muted">${stat.label}</div>
+          <div style="font-size:30px;font-weight:700;margin-top:6px;">${stat.value}</div>
+        </div>
+      `).join("");
+
+      const typeFilter = el("typeFilter");
+      typeFilter.innerHTML = `
+        <option value="all">${t.allRooms}</option>
+        <option value="Privada">${t.private}</option>
+        <option value="Semi Privada">${t.semiPrivate}</option>
+        <option value="Dormitorio">${t.dorms}</option>
+      `;
+      typeFilter.value = state.typeFilter;
+
+      const roomCards = filteredRooms().map(room => {
+        const beds = room.beds.map(bed => ({ ...bed, dateStatus: getDateStatus(bed, state.selectedDate) }));
+        const available = beds.filter(b => b.dateStatus === "available").length;
+        const occupied = beds.filter(b => b.dateStatus === "occupied").length;
+        return `
+          <div class="card room-card" onclick="openRoom(${room.id})">
+            <div class="row">
+              <strong>${room.name}</strong>
+              <span class="pill">${room.type === 'Dormitorio' ? t.dorms : room.type === 'Privada' ? t.private : t.semiPrivate}</span>
+            </div>
+            <div class="row small muted" style="margin-top:10px;">
+              <span>${available} ${t.free.toLowerCase()}</span>
+              <span>${occupied} ${t.occupied.toLowerCase()}</span>
+            </div>
+            <div class="bed-list">
+              ${beds.map(bed => `
+                <div class="bed-item ${bed.dateStatus}">
+                  <div class="row"><strong>${bed.label}</strong><span class="small">${bed.bunk || ''}</span></div>
+                  <div class="small" style="margin-top:4px;">${statusLabel[state.lang][bed.dateStatus]}</div>
+                </div>
+              `).join("")}
+            </div>
+          </div>
+        `;
+      }).join("");
+      el("roomsGrid").innerHTML = roomCards;
+
+      const s = state.smartSuggestion;
+      el("suggestionBox").innerHTML = s ? `
+        <div class="suggestion">
+          <div><strong>${t.suggestedPlacement}</strong></div>
+          <div style="margin-top:6px;">${s.guest} → <strong>${s.roomName}</strong>, <strong>${s.bedLabel}</strong> (${s.bunk})</div>
+          <div class="small muted" style="margin-top:6px;">${t.currentRoomFill}: ${s.occupiedBeds} / ${s.totalBeds}</div>
+          <div style="margin-top:12px;"><button class="btn-dark" onclick="assignSuggestedBed()">${t.assignThisBed}</button></div>
+        </div>
+      ` : "";
+    }
+
+    function renderModal() {
+      const room = state.rooms.find(r => r.id === state.selectedRoomId);
+      if (!room) return;
+      const t = labels[state.lang];
+      el("modalTitle").textContent = room.name;
+      el("modalGrid").innerHTML = room.beds.map(bed => {
+        const displayStatus = getDateStatus(bed, state.selectedDate);
+        return `
+          <div class="card">
+            <div class="row"><div><strong>${bed.label}</strong><div class="small muted">${bed.bunk || ''}</div></div><span class="pill ${displayStatus}">${statusLabel[state.lang][displayStatus]}</span></div>
+            <div class="section-space">
+              <label>${t.status}</label>
+              <select onchange="changeBedField(${room.id}, '${bed.id}', 'status', this.value)">
+                <option value="available" ${bed.status === 'available' ? 'selected' : ''}>${statusLabel[state.lang].available}</option>
+                <option value="occupied" ${bed.status === 'occupied' ? 'selected' : ''}>${statusLabel[state.lang].occupied}</option>
+                <option value="cleaning" ${bed.status === 'cleaning' ? 'selected' : ''}>${statusLabel[state.lang].cleaning}</option>
+                <option value="reserved" ${bed.status === 'reserved' ? 'selected' : ''}>${statusLabel[state.lang].reserved}</option>
+              </select>
+            </div>
+            <div class="section-space">
+              <label>${t.guestName}</label>
+              <input value="${bed.guest || ''}" oninput="changeBedField(${room.id}, '${bed.id}', 'guest', this.value)" />
+            </div>
+            <div class="smart-grid section-space">
+              <div>
+                <label>Check-in</label>
+                <input type="date" value="${bed.checkIn || ''}" onchange="changeBedField(${room.id}, '${bed.id}', 'checkIn', this.value)" />
+              </div>
+              <div>
+                <label>Check-out</label>
+                <input type="date" value="${bed.checkOut || ''}" onchange="changeBedField(${room.id}, '${bed.id}', 'checkOut', this.value)" />
+              </div>
+            </div>
+            <div class="section-space small muted">${t.stayDates}: ${bed.checkIn || t.noCheckIn} to ${bed.checkOut || t.noCheckOut}</div>
+            <div class="row section-space">
+              <button class="btn-dark" onclick="checkIn(${room.id}, '${bed.id}')">${t.checkIn}</button>
+              <button onclick="checkOut(${room.id}, '${bed.id}')">${t.checkOut}</button>
+            </div>
+          </div>
+        `;
+      }).join("");
+    }
+
+    el("search").addEventListener("input", (e) => { state.search = e.target.value; render(); });
+    el("selectedDate").value = state.selectedDate;
+    el("selectedDate").addEventListener("change", (e) => { state.selectedDate = e.target.value; render(); });
+    el("typeFilter").addEventListener("change", (e) => { state.typeFilter = e.target.value; render(); });
+    el("freeOnlyBtn").addEventListener("click", () => { state.showFreeOnly = !state.showFreeOnly; render(); });
+    el("langBtn").addEventListener("click", () => { state.lang = state.lang === "en" ? "es" : "en"; render(); if (state.selectedRoomId) renderModal(); });
+    el("refreshBtn").addEventListener("click", loadFromSheet);
+    el("findBedBtn").addEventListener("click", runSmartAssign);
+    el("assignCheckIn").value = state.selectedDate;
+    el("assignCheckOut").value = state.selectedDate;
+    el("closeModalBtn").addEventListener("click", closeRoom);
+    el("roomModal").addEventListener("click", (e) => { if (e.target.id === 'roomModal') closeRoom(); });
+
+    window.openRoom = openRoom;
+    window.closeRoom = closeRoom;
+    window.checkIn = checkIn;
+    window.checkOut = checkOut;
+    window.changeBedField = changeBedField;
+    window.assignSuggestedBed = assignSuggestedBed;
+
+    render();
+    loadFromSheet();
+  </script>
+</body>
+</html>
+    
+  </body>
+  
+</html>
